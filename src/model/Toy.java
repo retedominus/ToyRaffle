@@ -25,12 +25,14 @@ public class Toy {
         return quantity;
     }
 
-    public double getFrequency() {
+    public int getFrequency() {
         return frequency;
     }
 
-
     public void setQuantity(int quantity) {
+        if(quantity < 1) {
+            System.out.println();
+        }
         this.quantity = quantity;
     }
 
