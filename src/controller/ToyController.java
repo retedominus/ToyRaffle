@@ -1,10 +1,12 @@
 package controller;
+
 import model.Toy;
 import model.ToyList;
 import view.ToyView;
 
 
 import java.util.Collections;
+import java.util.InputMismatchException;
 import java.util.List;
 import java.util.Random;
 import java.util.stream.Collectors;
@@ -23,61 +25,90 @@ public class ToyController {
     public void start() {
         boolean running = true;
         while (running) {
-            int choice = toyView.showMainMenu();
-            switch (choice) {
-                case 1 -> showAllToys();
-                case 2 -> addNewToy();
-                case 3 -> editToyFrequency();
-                case 4 -> playGame();
-                case 5 -> showPrizeToys();
-                case 6 -> running = false;
-                default -> toyView.showError("Неверный выбор. Попробуйте снова.");
+            try {
+                int choice = toyView.showMainMenu();
+                switch (choice) {
+                    case 1 -> showAllToys();
+                    case 2 -> addNewToy();
+                    case 3 -> editToyFrequency();
+                    case 4 -> playGame();
+                    case 5 -> showPrizeToys();
+                    case 6 -> running = false;
+                    default -> toyView.showError("Неверный выбор. Попробуйте снова.");
+                }
+            } catch (InputMismatchException e) {
+                toyView.showError("Неверный формат ввода. Попробуйте снова.");
             }
         }
     }
+
 
     private void addNewToy() {
         String name = toyView.enterToyName();
         int frequency = toyView.enterToyFrequency();
         int quantity = toyView.enterToyQuantity();
+        toyList.clearToyList();
+        toyList.readToysCSV();
         int id = toyList.getNextId();
         Toy newToy = new Toy(id, name, quantity, frequency);
         toyList.addToy(newToy);
+        toyList.saveToysCSV();
         toyView.showSuccessMessage("Игрушка успешно добавлена с id: " + id);
     }
 
     private void editToyFrequency() {
-        int id = toyView.selectToyId();
-        Toy toyToEdit = toyList.getToyById(id);
-        if (toyToEdit == null) {
-            toyView.showError("Игрушка не найдена");
-            return;
+        toyList.clearToyList();
+        toyList.readToysCSV();
+        if (!toyList.getToys().isEmpty()) {
+            int id = toyView.selectToyId();
+            Toy toyToEdit = toyList.getToyById(id);
+            if (toyToEdit == null) {
+                toyView.showError("Игрушка не найдена");
+                return;
+            }
+            int newFrequency = toyView.enterToyFrequency();
+            toyToEdit.setFrequency(newFrequency);
+            toyList.updateToyList(toyList.getToys(), toyToEdit);
+            toyList.saveToysCSV();
+            toyView.showSuccessMessage("Частота выпадения игрушки изменена.");
+        } else {
+            System.out.println("У вас пока нет игрушек. Для начала добавьте пару для розыгрыша.\n");
         }
-        int newFrequency = toyView.enterToyFrequency();
-        toyToEdit.setFrequency(newFrequency);
-        toyView.showSuccessMessage("Частота выпадения игрушки изменена.");
+
     }
 
     private void showAllToys() {
+        toyList.clearToyList();
+        toyList.readToysCSV();
         List<Toy> toys = toyList.getToys();
-        if (toys.isEmpty()) {
-            toyView.showError("Игрушки не найдены.");
-        } else {
+        if (!toys.isEmpty()) {
             toyView.showAllToys(toys);
+        } else {
+            System.out.println("У вас пока нет игрушек. Для начала добавьте пару для розыгрыша.\n");
         }
     }
 
     public void playGame() {
-        List<Toy> toysWithHighestFrequency = getToysWithHighestFrequency();
-        Toy prizeToy = selectPrizeToy(toysWithHighestFrequency);
-        if(prizeToy.getQuantity() > 1) {
-            toyList.decreaseToyQuantity(prizeToy);
+        toyList.clearToyList();
+        toyList.readToysCSV();
+        if (!toyList.getToys().isEmpty()) {
+            List<Toy> toysWithHighestFrequency = getToysWithHighestFrequency();
+            Toy prizeToy = selectPrizeToy(toysWithHighestFrequency);
+            if (prizeToy.getQuantity() > 1) {
+                toyList.decreaseToyQuantity(prizeToy);
+                toyList.updateToyList(toyList.getToys(), prizeToy);
+                toyList.saveToysCSV();
+            } else {
+                toyList.deleteToy(prizeToy);
+                toyList.saveToysCSV();
+            }
+            prizeToyList.clearToyList();
+            prizeToyList.addPrizeToy(prizeToy);
+            prizeToyList.savePrizeToy();
+            toyView.showWinnerMessage(prizeToy);
         } else {
-            toyList.deleteToy(prizeToy);
+            System.out.println("У вас пока нет игрушек. Для начала добавьте пару для розыгрыша.\n");
         }
-        prizeToyList.addPrizeToy(prizeToy);
-        prizeToyList.savePrizeToy(prizeToy);
-        toyView.showWinnerMessage(prizeToy);
     }
 
 
@@ -94,7 +125,6 @@ public class ToyController {
     }
 
     private void showPrizeToys() {
-        prizeToyList.readPrizeToyFile();
         toyView.showPrizeToys();
     }
 }

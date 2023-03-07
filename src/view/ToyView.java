@@ -23,7 +23,12 @@ public class ToyView {
                 5. Показать все выигравшие игрушки
                 6. Выйти
                 Выберите действие:\040""");
-        return scanner.nextInt();
+        try {
+            return scanner.nextInt();
+        } catch (InputMismatchException e) {
+            scanner.nextLine();
+            return 0;
+        }
     }
 
     public int selectToyId() {
@@ -80,30 +85,35 @@ public class ToyView {
     public void showPrizeToys() {
         ToyList prizeToys = new ToyList();
         prizeToys.readPrizeToyFile();
+        System.out.println("Выданы следующие игрушки:");
         for (Toy toy : prizeToys.getToys()) {
-            System.out.println("Игрушка: " + toy.getName() + " (id: " + toy.getId() + ")" +
-            "Количество: " + toy.getQuantity());
+            System.out.println("Игрушка: " + toy.getName() + " (id: " + toy.getId() + ") " +
+                    "Количество: " + toy.getQuantity());
         }
+        System.out.println();
     }
 
 
     public void showError(String errorMessage) {
-        System.out.println("Ошибка: " + errorMessage);
+        System.out.println("Ошибка: " + errorMessage + "\n");
     }
 
     public void showSuccessMessage(String message) {
-        System.out.println("Успешно: " + message);
+        System.out.println("Успешно: " + message + "\n");
     }
 
     public void showAllToys(List<Toy> toys) {
-        System.out.println("Вот все игрушки:");
+        System.out.println("Вот все игрушки:\n");
         for (Toy toy : toys) {
-            System.out.println(toy.toString());
+            System.out.println("ID: " + toy.getId() + ", Имя: " + toy.getName() +
+                    ", Количество: " + toy.getQuantity() + ", Частота выпадения: "
+                    + toy.getFrequency());
         }
+        System.out.println();
     }
 
     public void showWinnerMessage(Toy prizeToy) {
-        System.out.println("Поздравляю! Вы выиграли " + prizeToy.getName() + "!");
+        System.out.println("Поздравляю! Вы выиграли " + prizeToy.getName() + "!\n");
     }
 
 }

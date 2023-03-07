@@ -7,11 +7,7 @@ public class Main {
         ToyList toyList = new ToyList();
         ToyView toyView = new ToyView();
         ToyController toyController = new ToyController(toyList, toyView);
+        toyController.start();
 
-        toyList.readToysCSV(); // чтение сохраненных данных из файла
-
-        toyController.start(); // запуск основного цикла программы
-
-        toyList.saveToysCSV(); // сохранение данных в файл
     }
 }

@@ -31,9 +31,10 @@ public class Toy {
 
     public void setQuantity(int quantity) {
         if(quantity < 1) {
-            System.out.println();
+            System.out.println("Количество не может быть менее 1.");
+        } else {
+            this.quantity = quantity;
         }
-        this.quantity = quantity;
     }
 
     public void setFrequency(int frequency) {
@@ -42,6 +43,7 @@ public class Toy {
 
     @Override
     public String toString() {
-        return String.format("%d,%s,%d,%d", id, name, quantity, frequency);
+        return String.format("%d,%s,%d,%d",
+                id, name, quantity, frequency);
     }
 }

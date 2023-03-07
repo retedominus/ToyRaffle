@@ -23,32 +23,33 @@ public class ToyList {
     }
 
     public void saveToysCSV() {
-        try (PrintWriter writer = new PrintWriter("toys.csv")) {
+        try (PrintWriter writer = new PrintWriter(new FileWriter("toys.csv", false))) {
             StringBuilder sb = new StringBuilder();
-            sb.append("id, name, qty, frequency");
-            sb.append(System.lineSeparator());
             for (Toy toy : toys) {
                 sb.append(toy.toString());
                 sb.append(System.lineSeparator());
             }
             writer.write(sb.toString());
-        } catch (FileNotFoundException e) {
+        } catch (IOException e) {
             System.out.println(e.getMessage());
         }
     }
 
-    public void savePrizeToy(Toy prizeToy) {
-        try (PrintWriter writer = new PrintWriter("prizeToys.txt")) {
-            String sb = prizeToy.toString() +
-                    System.lineSeparator();
-            writer.write(sb);
-        } catch (FileNotFoundException e) {
+    public void savePrizeToy() {
+        try (PrintWriter writer = new PrintWriter(new FileWriter("prizeToys.csv", true))) {
+            StringBuilder sb = new StringBuilder();
+            for (Toy toy : toys) {
+                sb.append(toy.toString());
+                sb.append(System.lineSeparator());
+            }
+            writer.write(sb.toString());
+        } catch (IOException e) {
             System.out.println(e.getMessage());
         }
     }
 
     public void readPrizeToyFile() {
-        try (BufferedReader br = new BufferedReader(new FileReader("prizeToys.txt"))) {
+        try (BufferedReader br = new BufferedReader(new FileReader("prizeToys.csv"))) {
             String line;
             while ((line = br.readLine()) != null) {
                 String[] values = line.split(",");
@@ -62,7 +63,7 @@ public class ToyList {
                 }
             }
         } catch (IOException e) {
-            System.out.println(e.getMessage());
+            System.out.println("Призовые игрушки не найдены. Проведите розыгрыш.\n");
         }
 
     }
@@ -82,7 +83,7 @@ public class ToyList {
                 }
             }
         } catch (IOException e) {
-            System.out.println(e.getMessage());
+            System.out.println("\n");
         }
 
     }
@@ -108,6 +109,10 @@ public class ToyList {
         toys.remove(toyToDelete);
     }
 
+    public void clearToyList() {
+        toys.clear();
+    }
+
     public void decreaseToyQuantity(Toy toy) {
         toy.setQuantity(toy.getQuantity() - 1);
     }
@@ -119,4 +124,15 @@ public class ToyList {
         }
         return frequencies;
     }
+
+    public void updateToyList(List<Toy> toyList, Toy updatedToy) {
+        for (int i = 0; i < toyList.size(); i++) {
+            if (toyList.get(i).getId() == updatedToy.getId()) {
+                toyList.set(i, updatedToy);
+                break;
+            }
+        }
+    }
+
+
 }
