@@ -85,12 +85,15 @@ public class ToyView {
     public void showPrizeToys() {
         ToyList prizeToys = new ToyList();
         prizeToys.readPrizeToyFile();
-        System.out.println("Выданы следующие игрушки:");
-        for (Toy toy : prizeToys.getToys()) {
-            System.out.println("Игрушка: " + toy.getName() + " (id: " + toy.getId() + ") " +
-                    "Количество: " + toy.getQuantity());
+        if(!prizeToys.getToys().isEmpty()) {
+            System.out.println("Выданы следующие игрушки:");
+            for (Toy toy : prizeToys.getToys()) {
+                System.out.println("Игрушка: " + toy.getName() + " (id: " + toy.getId() + ") " +
+                        "Количество: " + toy.getQuantity());
+            }
+            System.out.println();
         }
-        System.out.println();
+
     }
 
 

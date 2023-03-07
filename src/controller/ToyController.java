@@ -103,6 +103,7 @@ public class ToyController {
                 toyList.saveToysCSV();
             }
             prizeToyList.clearToyList();
+            prizeToy.setQuantity(1);
             prizeToyList.addPrizeToy(prizeToy);
             prizeToyList.savePrizeToy();
             toyView.showWinnerMessage(prizeToy);
